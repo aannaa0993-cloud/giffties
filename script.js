@@ -1,619 +1,953 @@
-/* GIFTY — JavaScript
-   Mengatur galeri, filter, editor, preview, upload foto, dan link hadiah interaktif.
-*/
-(() => {
-  "use strict";
+/* GIFTY — gaya utama website */
 
-  // Fungsi singkat untuk memilih elemen HTML.
-  const $ = (selector) => document.querySelector(selector);
-  const $$ = (selector) => document.querySelectorAll(selector);
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:wght@500;600;700&display=swap');
 
-  const templateGrid = $("#templateGrid");
-  const editorModal = $("#editorModal");
-  const giftForm = $("#giftForm");
-  const publicView = $("#publicView");
-  const toast = $("#toast");
+:root {
+  --cream: #fffaf0;
+  --yellow: #ffe58a;
+  --pink: #ffd6df;
+  --sage: #dce8d5;
+  --lilac: #e6dcf7;
+  --ink: #332d2b;
+  --muted: #857a75;
+  --white: #fff;
+  --border: #eee4d8;
+  --shadow: 0 12px 35px rgba(74, 52, 41, .08);
+  --radius: 22px;
+  --accent: var(--yellow);
+}
 
-  // Data template yang tersedia di galeri.
-  const templates = [
-    {
-      id: "love",
-      title: "Love Letter",
-      category: "love",
-      description: "A little letter for your favorite person.",
-      emoji: "💌",
-      color: "#ffd6df",
-      headline: "A little letter for you",
-      message: "There's something about you that makes ordinary days feel special. Thank you for being you.",
-      tag: "For someone special"
-    },
-    {
-      id: "birthday",
-      title: "Birthday Cake",
-      category: "birthday",
-      description: "Make their special day a little sweeter.",
-      emoji: "🎂",
-      color: "#ffe58a",
-      headline: "Happy Birthday!",
-      message: "Today is all about you. I hope your day is filled with little things that make you smile.",
-      tag: "Birthday"
-    },
-    {
-      id: "memory",
-      title: "Memory Lane",
-      category: "friends",
-      description: "Keep your favorite memories in one place.",
-      emoji: "📸",
-      color: "#dce8d5",
-      headline: "Our little memories",
-      message: "Some of my favorite moments are the simplest ones, especially when you're there.",
-      tag: "Our memories"
-    },
-    {
-      id: "mixtape",
-      title: "Mixtape for You",
-      category: "love",
-      description: "A playlist-shaped way to say what you feel.",
-      emoji: "🎧",
-      color: "#e6dcf7",
-      headline: "Songs that remind me of you",
-      message: "Every song has a little piece of a memory. Here's a few that made me think of you.",
-      tag: "Press play"
-    },
-    {
-      id: "surprise",
-      title: "Surprise Box",
-      category: "cute",
-      description: "A tiny surprise wrapped in a digital gift.",
-      emoji: "🎁",
-      color: "#ffd6df",
-      headline: "A little surprise!",
-      message: "You deserve something nice today. So here's a little reminder that someone is thinking of you.",
-      tag: "Open me"
-    },
-    {
-      id: "bestie",
-      title: "Bestie Certificate",
-      category: "friends",
-      description: "Official proof that they're your favorite human.",
-      emoji: "🏆",
-      color: "#ffe58a",
-      headline: "Certified Bestie",
-      message: "Awarded for being an absolute icon, making ordinary days fun, and being one of my favorite people.",
-      tag: "Bestie approved"
-    },
-    {
-      id: "universe",
-      title: "My Little Universe",
-      category: "cute",
-      description: "A tiny universe made just for them.",
-      emoji: "🌙",
-      color: "#e6dcf7",
-      headline: "You are your own universe",
-      message: "I hope you remember how much light you bring into the little corners of this world.",
-      tag: "Made of stardust"
-    },
-    {
-      id: "sunshine",
-      title: "Pocket Sunshine",
-      category: "cute",
-      description: "A pocket-sized reminder for a cloudy day.",
-      emoji: "☀️",
-      color: "#ffe58a",
-      headline: "A little sunshine for you",
-      message: "If today feels a little heavy, here's a small reminder that brighter moments can still find you.",
-      tag: "You got this"
-    }
-  ];
+* {
+  box-sizing: border-box;
+}
 
-  // Menyimpan keadaan template dan hadiah yang sedang dibuat.
-  let selectedTemplate = templates[0];
-  let selectedColor = selectedTemplate.color;
-  let photoData = "";
-  let generatedGiftLink = "";
-  let toastTimer;
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 25px;
+}
 
-  // Menampilkan notifikasi singkat.
-  function showToast(message) {
-    if (!toast) return;
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: "Nunito", sans-serif;
+}
 
-    toast.textContent = message;
-    toast.classList.add("show");
+body.modal-open {
+  overflow: hidden;
+}
 
-    window.clearTimeout(toastTimer);
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
 
-    toastTimer = window.setTimeout(() => {
-      toast.classList.remove("show");
-    }, 2600);
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid #c48c2a;
+  outline-offset: 3px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.root {
+  min-height: 100vh;
+}
+
+.wrap {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 6%;
+}
+
+/* Navigasi */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 0;
+  gap: 20px;
+}
+
+.logo {
+  font-family: "Playfair Display", serif;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  white-space: nowrap;
+}
+
+.logo-icon {
+  color: #c48c2a;
+  margin-right: 5px;
+}
+
+.logo-dot {
+  color: #c48c2a;
+}
+
+.navright {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.navlink {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 800;
+  padding: 12px;
+}
+
+.navlink:hover {
+  color: var(--ink);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 12px 21px;
+  background: var(--yellow);
+  color: var(--ink);
+  font-weight: 900;
+  transition: transform .2s, box-shadow .2s;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 16px rgba(74, 52, 41, .12);
+}
+
+.button.secondary {
+  background: #fff;
+  border-color: var(--border);
+}
+
+.button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Bagian hero */
+.hero {
+  display: grid;
+  grid-template-columns: 1.05fr .95fr;
+  align-items: center;
+  gap: 50px;
+  padding: 55px 2% 85px;
+}
+
+.kicker {
+  display: inline-block;
+  background: var(--pink);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .5px;
+  margin-bottom: 22px;
+}
+
+.hero h1 {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(42px, 5.3vw, 70px);
+  line-height: 1.08;
+  letter-spacing: -2px;
+  margin: 0 0 22px;
+}
+
+.hero h1 em {
+  color: #d98d9d;
+  font-weight: 500;
+}
+
+.hero-copy > p {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.8;
+  max-width: 470px;
+  margin: 0 0 28px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hero-art {
+  position: relative;
+  min-height: 390px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.art-stack {
+  position: relative;
+  width: 300px;
+  height: 300px;
+}
+
+.art-card {
+  position: absolute;
+  width: 230px;
+  height: 280px;
+  left: 35px;
+  top: 10px;
+  border-radius: 25px;
+  box-shadow: var(--shadow);
+}
+
+.art-card.one {
+  background: var(--sage);
+  transform: rotate(-13deg);
+}
+
+.art-card.two {
+  background: var(--lilac);
+  transform: rotate(9deg);
+}
+
+.art-card.three {
+  background: var(--pink);
+  display: grid;
+  place-items: center;
+  font-size: 80px;
+  transform: rotate(-2deg);
+  border: 9px solid white;
+}
+
+.float {
+  position: absolute;
+  padding: 12px 17px;
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.f1 { top: 45px; right: 1%; }
+.f2 { bottom: 42px; left: 1%; }
+
+/* Galeri template */
+.gallery-section {
+  padding: 65px 0 80px;
+  border-top: 1px solid rgba(238, 228, 216, .7);
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.section-head h2,
+.how > h2 {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(30px, 4vw, 44px);
+  letter-spacing: -1px;
+  margin: 0 0 10px;
+}
+
+.section-head p {
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.7;
+}
+
+.pill {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .7px;
+  padding: 9px 13px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.filters {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.filter {
+  padding: 10px 17px;
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.filter.active,
+.filter:hover {
+  background: var(--yellow);
+  color: var(--ink);
+  border-color: var(--yellow);
+}
+
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.template-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform .25s, box-shadow .25s;
+}
+
+.template-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow);
+}
+
+.template-art {
+  min-height: 175px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 58px;
+  position: relative;
+  overflow: hidden;
+}
+
+.template-art:before,
+.template-art:after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .55);
+}
+
+.template-art:before {
+  width: 120px; height: 120px; top: -35px; left: -25px;
+}
+
+.template-art:after {
+  width: 90px; height: 90px; right: -20px; bottom: -25px;
+}
+
+.template-art span {
+  position: relative;
+  z-index: 1;
+}
+
+.template-info {
+  padding: 18px;
+}
+
+.template-info h3 {
+  font-family: "Playfair Display", serif;
+  font-size: 20px;
+  margin: 0 0 7px;
+}
+
+.template-info p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 42px;
+  margin: 0 0 16px;
+}
+
+.template-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.template-tag {
+  font-size: 11px;
+  font-weight: 900;
+  padding: 6px 10px;
+  background: var(--cream);
+  border-radius: 999px;
+}
+
+.template-bottom button {
+  border: 0;
+  background: var(--yellow);
+  padding: 9px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 45px 20px;
+  color: var(--muted);
+}
+
+.how {
+  background: var(--sage);
+  margin: 0 -6.82%;
+  padding: 70px 6.82% 80px;
+}
+
+.how > h2 {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 25px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.step {
+  background: rgba(255, 255, 255, .78);
+  border-radius: var(--radius);
+  padding: 28px;
+}
+
+.step b {
+  width: 42px; height: 42px;
+  display: grid; place-items: center;
+  background: var(--yellow);
+  border-radius: 50%;
+  margin-bottom: 18px;
+}
+
+.step h3 {
+  font-family: "Playfair Display", serif;
+  font-size: 22px;
+  margin: 0 0 10px;
+}
+
+.step p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.footer {
+  padding: 32px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Modal editor */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(45, 35, 32, .5);
+  backdrop-filter: blur(5px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-box {
+  width: min(1000px, 100%);
+  max-height: 94vh;
+  overflow-y: auto;
+  background: var(--cream);
+  border-radius: 25px;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, .18);
+}
+
+.modal-head {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--border);
+  background: var(--cream);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.modal-head h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 27px;
+  margin: 0;
+}
+
+.close {
+  width: 38px; height: 38px;
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 50%;
+  font-size: 24px;
+  display: grid; place-items: center;
+}
+
+.editor {
+  display: grid;
+  grid-template-columns: 1fr .9fr;
+  gap: 28px;
+  padding: 28px;
+}
+
+.form-field {
+  margin-bottom: 17px;
+}
+
+.form-field label,
+.link-result label {
+  display: block;
+  font-size: 13px;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.form-field input,
+.form-field textarea,
+.form-field select,
+.link-result input {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  outline: none;
+  color: var(--ink);
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus,
+.link-result input:focus {
+  border-color: #e4b6a8;
+  box-shadow: 0 0 0 3px rgba(228, 182, 168, .2);
+}
+
+.form-field textarea {
+  min-height: 110px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.help,
+.song-status {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+.submit-button {
+  width: 100%;
+}
+
+.link-result {
+  margin-top: 18px;
+  padding: 14px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.preview-column {
+  position: sticky;
+  top: 10px;
+  align-self: start;
+}
+
+.preview-label {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.preview {
+  min-height: 370px;
+  border-radius: 20px;
+  padding: 25px;
+  background: var(--accent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.preview:before {
+  content: "✦";
+  position: absolute; top: 15px; left: 20px;
+  font-size: 25px; opacity: .55;
+}
+
+.preview:after {
+  content: "✧";
+  position: absolute; right: 20px; bottom: 15px;
+  font-size: 32px; opacity: .55;
+}
+
+.prev-tag {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 13px;
+}
+
+.prev-emoji {
+  font-size: 55px;
+  margin-bottom: 15px;
+}
+
+.preview h3 {
+  font-family: "Playfair Display", serif;
+  font-size: 27px;
+  line-height: 1.25;
+  margin: 0 0 12px;
+}
+
+.prev-message {
+  font-size: 13px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.preview img {
+  width: 100%;
+  max-height: 160px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin: 0 0 15px;
+}
+
+.prev-sign {
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  margin: 15px 0 0;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.modal-actions .button {
+  flex: 1;
+  min-width: 120px;
+}
+
+.song-status {
+  margin-bottom: 0;
+}
+
+/* =========================================================
+   HALAMAN PUBLIK & ANIMASI DINAMIS BERBEDA
+   ========================================================= */
+.public-view {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  min-height: 100vh;
+  padding: 60px 20px 40px;
+  background: radial-gradient(circle at center, #fffbf3 0%, #f7ebd9 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+}
+
+.floating-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.floating-element {
+  position: absolute;
+  bottom: -60px;
+  font-size: 28px;
+  user-select: none;
+  animation: floatUp 4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) scale(0.6) rotate(0deg);
+    opacity: 0;
   }
-
-  // Mengubah data hadiah menjadi Base64 agar dapat disimpan dalam URL.
-  function encodeData(data) {
-    const bytes = new TextEncoder().encode(JSON.stringify(data));
-
-    let binary = "";
-    bytes.forEach((byte) => {
-      binary += String.fromCharCode(byte);
-    });
-
-    return btoa(binary)
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=+$/g, "");
+  20% {
+    opacity: 0.95;
   }
-
-  // Membaca kembali data hadiah dari URL.
-  function decodeData(encoded) {
-    const base64 = encoded
-      .replace(/-/g, "+")
-      .replace(/_/g, "/");
-
-    const padded = base64.padEnd(
-      Math.ceil(base64.length / 4) * 4,
-      "="
-    );
-
-    const binary = atob(padded);
-    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
-
-    return JSON.parse(new TextDecoder().decode(bytes));
+  100% {
+    transform: translateY(-115vh) scale(1.2) rotate(25deg);
+    opacity: 0;
   }
-
-  // Mengambil data yang diisi pengguna pada form.
-  function getGiftData() {
-    return {
-      templateId: selectedTemplate.id,
-      recipient: $("#recipient")?.value.trim() || "",
-      sender: $("#sender")?.value.trim() || "",
-      headline: $("#headline")?.value.trim() || selectedTemplate.headline,
-      message: $("#message")?.value.trim() || "",
-      song: $("#song")?.value.trim() || "",
-      color: selectedColor,
-      photo: photoData,
-      emoji: selectedTemplate.emoji
-    };
-  }
-
-  // Menampilkan template pada galeri.
-  function renderTemplates(filter = "all") {
-    if (!templateGrid) return;
-
-    const filtered = filter === "all"
-      ? templates
-      : templates.filter((item) => item.category === filter);
-
-    const count = $("#templateCount");
-
-    if (count) {
-      count.textContent = `${filtered.length} TEMPLATE${filtered.length === 1 ? "" : "S"}`;
-    }
-
-    if (!filtered.length) {
-      templateGrid.innerHTML = '<div class="empty-state">Template tidak ditemukan.</div>';
-      return;
-    }
-
-    templateGrid.innerHTML = filtered.map((item) => `
-      <article class="template-card">
-        <div class="template-art" style="background:${item.color}">
-          <span aria-hidden="true">${item.emoji}</span>
-        </div>
-
-        <div class="template-info">
-          <h3>${item.title}</h3>
-          <p>${item.description}</p>
-
-          <div class="template-bottom">
-            <span class="template-tag">${item.tag}</span>
-
-            <button type="button" data-template="${item.id}">
-              Make yours
-            </button>
-          </div>
-        </div>
-      </article>
-    `).join("");
-  }
-
-  // Filter galeri
-  $$("#filters [data-filter]").forEach((button) => {
-    button.addEventListener("click", () => {
-      $$("#filters [data-filter]").forEach((item) => {
-        item.classList.toggle("active", item === button);
-      });
-
-      renderTemplates(button.dataset.filter || "all");
-    });
-  });
-
-  // Memperbarui preview berdasarkan isi form.
-  function updatePreview() {
-    const data = getGiftData();
-
-    const title = $("#prevTitle");
-    const message = $("#prevMessage");
-    const emoji = $("#prevEmoji");
-    const tag = $("#prevTag");
-    const sign = $("#prevSign");
-    const preview = $("#livePreview");
-    const image = $("#prevPhoto");
-    const count = $("#charCount");
-
-    if (title) title.textContent = data.headline || "A little gift for you";
-    if (message) message.textContent = data.message || "Your lovely message will appear here.";
-    if (emoji) emoji.textContent = data.emoji;
-    if (tag) tag.textContent = `For ${data.recipient || "someone special"}`;
-    
-    if (sign) {
-      sign.textContent = data.sender
-        ? `— with love, ${data.sender}`
-        : "— with love";
-    }
-
-    if (preview) preview.style.backgroundColor = selectedColor;
-    if (count) count.textContent = String($("#message")?.value.length || 0);
-
-    if (image) {
-      image.hidden = !photoData;
-      if (photoData) {
-        image.src = photoData;
-      } else {
-        image.removeAttribute("src");
-      }
-    }
-  }
-
-  function colorToAccentValue(color) {
-    const options = ["#f5c957", "#f3c7d0", "#c8d9bf", "#d9c9ef", "#f0c5a2"];
-    const map = {
-      "#ffe58a": "#f5c957",
-      "#ffd6df": "#f3c7d0",
-      "#dce8d5": "#c8d9bf",
-      "#e6dcf7": "#d9c9ef"
-    };
-
-    return map[color] || (options.includes(color) ? color : "#f5c957");
-  }
-
-  function openEditor(templateId) {
-    selectedTemplate = templates.find((item) => item.id === templateId) || templates[0];
-
-    selectedColor = selectedTemplate.color;
-    photoData = "";
-    generatedGiftLink = "";
-
-    if (giftForm) giftForm.reset();
-
-    $("#recipient").value = "";
-    $("#sender").value = "";
-    $("#headline").value = selectedTemplate.headline;
-    $("#message").value = selectedTemplate.message;
-    $("#song").value = "";
-    $("#accent").value = colorToAccentValue(selectedColor);
-
-    $("#prevPhoto").hidden = true;
-    $("#prevPhoto").removeAttribute("src");
-
-    $("#linkResult").hidden = true;
-    $("#copyLink").disabled = true;
-
-    $("#linkStatus").textContent = "Preview akan berubah saat kamu mengisi form.";
-
-    editorModal?.classList.add("show");
-    editorModal?.setAttribute("aria-hidden", "false");
-    document.body.classList.add("modal-open");
-
-    updatePreview();
-    $("#recipient")?.focus();
-  }
-
-  function closeEditor() {
-    editorModal?.classList.remove("show");
-    editorModal?.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("modal-open");
-  }
-
-  templateGrid?.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-template]");
-    if (button) {
-      openEditor(button.dataset.template);
-    }
-  });
-
-  $("#createNav")?.addEventListener("click", () => openEditor(selectedTemplate.id));
-  $("#browseBtn")?.addEventListener("click", () => $("#gallery")?.scrollIntoView({ behavior: "smooth" }));
-  $("#howNav")?.addEventListener("click", () => $("#how")?.scrollIntoView({ behavior: "smooth" }));
-
-  $("#surpriseBtn")?.addEventListener("click", () => {
-    const random = templates[Math.floor(Math.random() * templates.length)];
-    openEditor(random.id);
-  });
-
-  $("#closeEditor")?.addEventListener("click", closeEditor);
-
-  editorModal?.addEventListener("click", (event) => {
-    if (event.target === editorModal) closeEditor();
-  });
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && editorModal?.classList.contains("show")) {
-      closeEditor();
-    }
-  });
-
-  ["#recipient", "#sender", "#headline", "#message", "#song"].forEach((selector) => {
-    $(selector)?.addEventListener("input", updatePreview);
-  });
-
-  $("#accent")?.addEventListener("change", (event) => {
-    selectedColor = event.target.value;
-    updatePreview();
-  });
-
-  $("#photo")?.addEventListener("change", (event) => {
-    const file = event.target.files?.[0];
-
-    if (!file) {
-      photoData = "";
-      updatePreview();
-      return;
-    }
-
-    if (!file.type.startsWith("image/")) {
-      showToast("Pilih file gambar yang valid.");
-      event.target.value = "";
-      return;
-    }
-
-    if (file.size > 600 * 1024) {
-      showToast("Ukuran foto maksimal 600 KB.");
-      event.target.value = "";
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      photoData = typeof reader.result === "string" ? reader.result : "";
-      updatePreview();
-    };
-
-    reader.onerror = () => {
-      showToast("Foto tidak bisa dibaca. Coba pilih foto lain.");
-    };
-
-    reader.readAsDataURL(file);
-  });
-
-  $("#previewOpen")?.addEventListener("click", () => {
-    updatePreview();
-    showToast("Preview sudah diperbarui.");
-  });
-
-  function createGiftLink(data) {
-    const url = new URL(window.location.href);
-    url.hash = `gift=${encodeData(data)}`;
-    return url.href;
-  }
-
-  giftForm?.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const data = getGiftData();
-
-    if (!data.recipient) {
-      showToast("Isi nama penerima dulu.");
-      $("#recipient")?.focus();
-      return;
-    }
-
-    if (!data.headline) {
-      showToast("Isi judul hadiah dulu.");
-      $("#headline")?.focus();
-      return;
-    }
-
-    if (!data.message) {
-      showToast("Tulis pesan hadiah dulu.");
-      $("#message")?.focus();
-      return;
-    }
-
-    if (data.song) {
-      try {
-        const songURL = new URL(data.song);
-        if (!["http:", "https:"].includes(songURL.protocol)) {
-          throw new Error("Invalid URL");
-        }
-      } catch {
-        showToast("Link lagu harus berupa URL yang valid.");
-        $("#song")?.focus();
-        return;
-      }
-    }
-
-    generatedGiftLink = createGiftLink(data);
-
-    $("#generatedLink").value = generatedGiftLink;
-    $("#linkResult").hidden = false;
-    $("#copyLink").disabled = false;
-    $("#linkStatus").textContent = "Link berhasil dibuat. Salin untuk membagikannya.";
-
-    showToast("Link hadiah berhasil dibuat.");
-  });
-
-  $("#copyLink")?.addEventListener("click", async () => {
-    if (!generatedGiftLink) {
-      showToast("Buat link hadiah terlebih dahulu.");
-      return;
-    }
-
-    try {
-      await navigator.clipboard.writeText(generatedGiftLink);
-      showToast("Link hadiah berhasil disalin.");
-    } catch {
-      const input = $("#generatedLink");
-      input?.focus();
-      input?.select();
-
-      let copied = false;
-      try {
-        copied = document.execCommand("copy");
-      } catch {
-        copied = false;
-      }
-
-      showToast(copied ? "Link hadiah berhasil disalin." : "Pilih dan salin link secara manual.");
-    }
-  });
-
-  /* ANIMASI KEJUTAN POP-UP (Balon & Confetti Floating) */
-  function triggerSurpriseEffects() {
-    const container = $("#floatingContainer");
-    if (!container) return;
-
-    container.innerHTML = "";
-    const items = ["🎈", "✨", "🌸", "💖", "🎉", "🌟", "🧸", "💌"];
-
-    for (let i = 0; i < 28; i++) {
-      const el = document.createElement("span");
-      el.className = "floating-element";
-      el.textContent = items[Math.floor(Math.random() * items.length)];
-
-      const leftPos = Math.random() * 92 + 4; // persen X
-      const duration = 3 + Math.random() * 2.5; // detik
-      const delay = Math.random() * 0.8; // detik delay
-
-      el.style.left = `${leftPos}%`;
-      el.style.animationDuration = `${duration}s`;
-      el.style.animationDelay = `${delay}s`;
-
-      container.appendChild(el);
-    }
-  }
-
-  // Menampilkan hadiah ketika link dibuka penerima.
-  function showPublicGift(data) {
-    $("#mainContent").hidden = true;
-
-    publicView.hidden = false;
-    publicView.classList.add("show");
-
-    // Reset keadaan amplop
-    const envelope = $("#envelopeCard");
-    const replayBar = $("#replayBar");
-    envelope?.classList.remove("open");
-    if (replayBar) replayBar.hidden = true;
-
-    $("#publicEmoji").textContent = data.emoji || "🎁";
-    $("#publicTag").textContent = "A LITTLE SURPRISE";
-
-    $("#publicRecipient").textContent = data.recipient
-      ? `Untuk ${data.recipient}`
-      : "Untuk Seseorang Spesial";
-
-    $("#publicTitle").textContent = data.headline || "A little gift for you";
-    $("#publicMessage").textContent = data.message || "";
-
-    $("#publicSign").textContent = data.sender
-      ? `— dengan hangat, ${data.sender}`
-      : "— dengan hangat";
-
-    $("#publicCard").style.backgroundColor = data.color || "#ffd6df";
-
-    // Foto hadiah
-    const image = $("#publicPhoto");
-    image.hidden = !data.photo;
-    if (data.photo) {
-      image.src = data.photo;
-    } else {
-      image.removeAttribute("src");
-    }
-
-    // Link lagu
-    const song = $("#publicSong");
-    song.hidden = true;
-    song.removeAttribute("href");
-
-    if (data.song) {
-      try {
-        const songURL = new URL(data.song);
-        if (["https:", "http:"].includes(songURL.protocol)) {
-          song.href = songURL.href;
-          song.hidden = false;
-        }
-      } catch {
-        // Ignored
-      }
-    }
-
-    document.title = `${data.headline || "A little gift"} — Gifty`;
-
-    // Interaction handler untuk membuka amplop
-    const openEnvelopeHandler = () => {
-      if (!envelope.classList.contains("open")) {
-        envelope.classList.add("open");
-        triggerSurpriseEffects();
-        if (replayBar) replayBar.hidden = false;
-      }
-    };
-
-    envelope.onclick = openEnvelopeHandler;
-    envelope.onkeydown = (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        openEnvelopeHandler();
-      }
-    };
-
-    window.scrollTo(0, 0);
-  }
-
-  function checkGiftURL() {
-    if (!window.location.hash.startsWith("#gift=")) {
-      return;
-    }
-
-    try {
-      const encoded = window.location.hash.slice("#gift=".length);
-      const data = decodeData(encoded);
-
-      if (!data || typeof data !== "object" || Array.isArray(data)) {
-        throw new Error("Data hadiah tidak valid");
-      }
-
-      showPublicGift(data);
-    } catch (error) {
-      showToast("Link hadiah ini tidak bisa dibuka. Pastikan link tersalin lengkap.");
-    }
-  }
-
-  function returnHome() {
-    publicView.classList.remove("show");
-    publicView.hidden = true;
-    $("#mainContent").hidden = false;
-
-    document.title = "gifty — make someone's day";
-    history.replaceState(null, "", window.location.pathname + window.location.search);
-    window.scrollTo(0, 0);
-  }
-
-  $("#backHome")?.addEventListener("click", returnHome);
-
-  // Tombol untuk membuka & menyegarkan animasi amplop
-  $("#publicReplay")?.addEventListener("click", () => {
-    const envelope = $("#envelopeCard");
-    const replayBar = $("#replayBar");
-
-    envelope?.classList.remove("open");
-    if (replayBar) replayBar.hidden = true;
-
-    setTimeout(() => {
-      envelope?.classList.add("open");
-      triggerSurpriseEffects();
-      if (replayBar) replayBar.hidden = false;
-    }, 400);
-  });
-
-  // Init
-  renderTemplates();
-  updatePreview();
-  checkGiftURL();
-})();
+}
+
+.back-home {
+  position: fixed;
+  top: 20px; left: 22px;
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-weight: 900;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.public-inner {
+  width: min(480px, 100%);
+  position: relative;
+  z-index: 2;
+}
+
+.gift-unboxing-wrapper {
+  perspective: 1000px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* AMPLOP STYLING */
+.envelope {
+  position: relative;
+  width: 100%;
+  min-height: 280px;
+  background: #fdf5ea;
+  border: 2px solid #edd6c5;
+  border-radius: 20px;
+  box-shadow: 0 18px 45px rgba(80, 50, 40, 0.12);
+  cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.envelope:not(.open):hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 24px 50px rgba(80, 50, 40, 0.18);
+}
+
+.envelope-flap {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 140px;
+  background: #f7e4d3;
+  clip-path: polygon(0 0, 50% 100%, 100% 0);
+  transform-origin: top center;
+  transition: transform 0.6s ease-in-out;
+  z-index: 4;
+}
+
+.envelope-pocket {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(253, 245, 234, 0) 0%, #f8ebd9 100%);
+  border-radius: 20px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.envelope-sticker {
+  position: absolute;
+  z-index: 5;
+  background: #ffffff;
+  padding: 14px 22px;
+  border-radius: 999px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 2px solid var(--yellow);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.envelope:not(.open) .envelope-sticker {
+  animation: pulseSticker 2s infinite alternate;
+}
+
+@keyframes pulseSticker {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.06); }
+}
+
+.sticker-emoji { font-size: 28px; }
+.sticker-text { font-weight: 800; font-size: 14px; color: var(--ink); }
+
+/* KARTU SURAT DI DALAMNYA */
+.public-card {
+  width: 90%;
+  margin: 20px auto;
+  border-radius: 18px;
+  padding: 32px 26px;
+  background: var(--pink);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  opacity: 0;
+  transform: translateY(40px) scale(0.92);
+  transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease;
+  z-index: 2;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+.envelope.open {
+  cursor: default;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.envelope.open .envelope-flap {
+  transform: rotateX(180deg);
+  opacity: 0;
+}
+
+.envelope.open .envelope-sticker {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.5);
+}
+
+.envelope.open .envelope-pocket {
+  opacity: 0;
+}
+
+.envelope.open .public-card {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.public-recipient {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(51, 45, 43, 0.75);
+  margin: 0 0 8px;
+}
+
+.public-card h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 30px;
+  line-height: 1.2;
+  margin: 0 0 16px;
+}
+
+.public-card img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 14px;
+  margin: 0 0 18px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.public-message {
+  font-size: 14px;
+  line-height: 1.85;
+  white-space: pre-wrap;
+  color: var(--ink);
+  margin: 0 0 16px;
+}
+
+/* Pemutar YouTube / Media Box */
+.media-player-box {
+  margin: 15px 0 5px;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 12px;
+  border-radius: 14px;
+}
+
+.youtube-embed-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* Rasio 16:9 */
+  height: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  margin-bottom: 10px;
+}
+
+.youtube-embed-wrap iframe {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  border: 0;
+  border-radius: 10px;
+}
+
+.song-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 8px 16px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  font-size: 12
