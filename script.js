@@ -374,7 +374,7 @@
   // Tombol navigasi slider preview
   $("#prevBtnPrev")?.addEventListener("click", () => {
     if (photosArray.length > 0) {
-      currentPhotoIndex = (currentPhotoIndex - +1 + photosArray.length) % photosArray.length;
+      currentPhotoIndex = (currentPhotoIndex - 1 + photosArray.length) % photosArray.length;
       updatePreview();
     }
   });
@@ -536,7 +536,7 @@
 
     $("#publicCard").style.backgroundColor = data.color || "#ffd6df";
 
-    // Setup Foto Publik Carousel (Mendukung data baru `photos` atau backward-compatible `photo`)
+    // Setup Foto Publik Carousel (Mendukung array `photos` atau legacy `photo`)
     let pubPhotos = [];
     if (data.photos && Array.isArray(data.photos)) {
       pubPhotos = data.photos;
