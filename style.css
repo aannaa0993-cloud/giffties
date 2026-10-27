@@ -1,9 +1,7 @@
 /* GIFTY — gaya utama website */
 
-/* Font dari Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:wght@500;600;700&display=swap');
 
-/* Warna utama website */
 :root {
   --cream: #fffaf0;
   --yellow: #ffe58a;
@@ -19,7 +17,6 @@
   --accent: var(--yellow);
 }
 
-/* Pengaturan dasar */
 * {
   box-sizing: border-box;
 }
@@ -128,7 +125,6 @@ img {
   color: var(--ink);
 }
 
-/* Tombol umum */
 .button {
   display: inline-flex;
   align-items: center;
@@ -207,7 +203,6 @@ img {
   flex-wrap: wrap;
 }
 
-/* Ilustrasi kartu hadiah */
 .hero-art {
   position: relative;
   min-height: 390px;
@@ -261,15 +256,8 @@ img {
   font-weight: 900;
 }
 
-.f1 {
-  top: 45px;
-  right: 1%;
-}
-
-.f2 {
-  bottom: 42px;
-  left: 1%;
-}
+.f1 { top: 45px; right: 1%; }
+.f2 { bottom: 42px; left: 1%; }
 
 /* Galeri template */
 .gallery-section {
@@ -310,7 +298,6 @@ img {
   white-space: nowrap;
 }
 
-/* Filter template */
 .filters {
   display: flex;
   justify-content: flex-start;
@@ -336,7 +323,6 @@ img {
   border-color: var(--yellow);
 }
 
-/* Susunan kartu template */
 .template-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -375,17 +361,11 @@ img {
 }
 
 .template-art:before {
-  width: 120px;
-  height: 120px;
-  top: -35px;
-  left: -25px;
+  width: 120px; height: 120px; top: -35px; left: -25px;
 }
 
 .template-art:after {
-  width: 90px;
-  height: 90px;
-  right: -20px;
-  bottom: -25px;
+  width: 90px; height: 90px; right: -20px; bottom: -25px;
 }
 
 .template-art span {
@@ -443,7 +423,6 @@ img {
   color: var(--muted);
 }
 
-/* Bagian cara kerja */
 .how {
   background: var(--sage);
   margin: 0 -6.82%;
@@ -470,10 +449,8 @@ img {
 }
 
 .step b {
-  width: 42px;
-  height: 42px;
-  display: grid;
-  place-items: center;
+  width: 42px; height: 42px;
+  display: grid; place-items: center;
   background: var(--yellow);
   border-radius: 50%;
   margin-bottom: 18px;
@@ -492,7 +469,6 @@ img {
   margin: 0;
 }
 
-/* Footer */
 .footer {
   padding: 32px 0;
   display: flex;
@@ -503,7 +479,7 @@ img {
   font-size: 13px;
 }
 
-/* Modal editor hadiah */
+/* Modal editor */
 .modal {
   position: fixed;
   inset: 0;
@@ -550,14 +526,12 @@ img {
 }
 
 .close {
-  width: 38px;
-  height: 38px;
+  width: 38px; height: 38px;
   border: 1px solid var(--border);
   background: #fff;
   border-radius: 50%;
   font-size: 24px;
-  display: grid;
-  place-items: center;
+  display: grid; place-items: center;
 }
 
 .editor {
@@ -567,7 +541,6 @@ img {
   padding: 28px;
 }
 
-/* Input form */
 .form-field {
   margin-bottom: 17px;
 }
@@ -628,7 +601,6 @@ img {
   border-radius: 14px;
 }
 
-/* Preview hadiah */
 .preview-column {
   position: sticky;
   top: 10px;
@@ -661,20 +633,14 @@ img {
 
 .preview:before {
   content: "✦";
-  position: absolute;
-  top: 15px;
-  left: 20px;
-  font-size: 25px;
-  opacity: .55;
+  position: absolute; top: 15px; left: 20px;
+  font-size: 25px; opacity: .55;
 }
 
 .preview:after {
   content: "✧";
-  position: absolute;
-  right: 20px;
-  bottom: 15px;
-  font-size: 32px;
-  opacity: .55;
+  position: absolute; right: 20px; bottom: 15px;
+  font-size: 32px; opacity: .55;
 }
 
 .prev-tag {
@@ -735,7 +701,7 @@ img {
 }
 
 /* =========================================================
-   HALAMAN HADIAH PUBLIC (INTERAKTIF & AMPLOP UNBOXING)
+   HALAMAN PUBLIK & ANIMASI DINAMIS BERBEDA
    ========================================================= */
 .public-view {
   position: fixed;
@@ -782,8 +748,7 @@ img {
 
 .back-home {
   position: fixed;
-  top: 20px;
-  left: 22px;
+  top: 20px; left: 22px;
   border: 1px solid var(--border);
   background: #fff;
   border-radius: 999px;
@@ -829,9 +794,7 @@ img {
 
 .envelope-flap {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0; left: 0; right: 0;
   height: 140px;
   background: #f7e4d3;
   clip-path: polygon(0 0, 50% 100%, 100% 0);
@@ -872,17 +835,10 @@ img {
   100% { transform: scale(1.06); }
 }
 
-.sticker-emoji {
-  font-size: 28px;
-}
+.sticker-emoji { font-size: 28px; }
+.sticker-text { font-weight: 800; font-size: 14px; color: var(--ink); }
 
-.sticker-text {
-  font-weight: 800;
-  font-size: 14px;
-  color: var(--ink);
-}
-
-/* KARTU PEJAN / SURAT */
+/* KARTU SURAT DI DALAMNYA */
 .public-card {
   width: 90%;
   margin: 20px auto;
@@ -898,7 +854,6 @@ img {
   word-wrap: break-word;
 }
 
-/* STATE SAAT AMPLOP DIBUKA */
 .envelope.open {
   cursor: default;
   background: transparent;
@@ -926,7 +881,6 @@ img {
   transform: translateY(0) scale(1);
 }
 
-/* ELEMEN DI DALAM KARTU PUBLIC */
 .public-recipient {
   font-size: 13px;
   font-weight: 900;
@@ -945,7 +899,7 @@ img {
 
 .public-card img {
   width: 100%;
-  max-height: 220px;
+  max-height: 200px;
   object-fit: cover;
   border-radius: 14px;
   margin: 0 0 18px;
@@ -960,12 +914,30 @@ img {
   margin: 0 0 16px;
 }
 
-.public-sign {
-  font-family: "Playfair Display", serif;
-  font-style: italic;
-  font-size: 16px;
-  margin: 18px 0 0;
-  color: var(--ink);
+/* Pemutar YouTube / Media Box */
+.media-player-box {
+  margin: 15px 0 5px;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 12px;
+  border-radius: 14px;
+}
+
+.youtube-embed-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* Rasio 16:9 */
+  height: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  margin-bottom: 10px;
+}
+
+.youtube-embed-wrap iframe {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  border: 0;
+  border-radius: 10px;
 }
 
 .song-button {
@@ -973,19 +945,27 @@ img {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-top: 20px;
-  padding: 10px 18px;
-  background: rgba(255, 255, 255, 0.85);
+  margin-top: 6px;
+  padding: 8px 16px;
+  background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
   color: var(--ink);
   transition: background 0.2s;
 }
 
 .song-button:hover {
-  background: #ffffff;
+  background: #fdfdfd;
+}
+
+.public-sign {
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-size: 15px;
+  margin: 16px 0 0;
+  color: var(--ink);
 }
 
 .replay-bar {
@@ -1007,166 +987,58 @@ img {
   transform: translateY(-2px);
 }
 
-/* Notifikasi */
 .toast {
   position: fixed;
-  bottom: 25px;
-  left: 50%;
+  bottom: 25px; left: 50%;
   transform: translate(-50%, 20px);
-  background: var(--ink);
-  color: #fff;
-  padding: 13px 20px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 900;
+  background: var(--ink); color: #fff;
+  padding: 13px 20px; border-radius: 999px;
+  font-size: 13px; font-weight: 900;
   box-shadow: var(--shadow);
-  opacity: 0;
-  visibility: hidden;
-  transition: all .25s;
-  z-index: 250;
-  max-width: calc(100% - 30px);
-  text-align: center;
+  opacity: 0; visibility: hidden;
+  transition: all .25s; z-index: 250;
+  max-width: calc(100% - 30px); text-align: center;
 }
 
 .toast.show {
-  opacity: 1;
-  visibility: visible;
+  opacity: 1; visibility: visible;
   transform: translate(-50%, 0);
 }
 
-/* Responsive Styles */
 @media (max-width: 1000px) {
-  .template-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .hero {
-    padding-left: 0;
-    padding-right: 0;
-    gap: 25px;
-  }
-
-  .wrap {
-    padding: 0 5%;
-  }
-
-  .how {
-    margin-left: -5.56%;
-    margin-right: -5.56%;
-    padding-left: 5.56%;
-    padding-right: 5.56%;
-  }
+  .template-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hero { padding-left: 0; padding-right: 0; gap: 25px; }
+  .wrap { padding: 0 5%; }
+  .how { margin-left: -5.56%; margin-right: -5.56%; padding-left: 5.56%; padding-right: 5.56%; }
 }
 
 @media (max-width: 700px) {
-  .nav {
-    padding: 18px 0;
-  }
-
-  .navright {
-    gap: 4px;
-  }
-
-  .navlink {
-    padding: 10px 7px;
-  }
-
-  .hero {
-    grid-template-columns: 1fr;
-    padding: 42px 0 55px;
-    text-align: center;
-  }
-
-  .hero-copy > p {
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .hero-actions {
-    justify-content: center;
-  }
-
-  .hero-art {
-    min-height: 330px;
-  }
-
-  .gallery-section {
-    padding: 50px 0 60px;
-  }
-
-  .section-head {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .steps {
-    grid-template-columns: 1fr;
-  }
-
-  .editor {
-    grid-template-columns: 1fr;
-    padding: 20px;
-  }
-
-  .preview-column {
-    position: static;
-  }
-
-  .modal-head {
-    padding: 18px 20px;
-  }
-
-  .footer {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .how {
-    padding-top: 55px;
-    padding-bottom: 60px;
-  }
-
-  .modal {
-    padding: 10px;
-  }
-
-  .modal-box {
-    max-height: 97vh;
-  }
+  .nav { padding: 18px 0; }
+  .navright { gap: 4px; }
+  .navlink { padding: 10px 7px; }
+  .hero { grid-template-columns: 1fr; padding: 42px 0 55px; text-align: center; }
+  .hero-copy > p { margin-left: auto; margin-right: auto; }
+  .hero-actions { justify-content: center; }
+  .hero-art { min-height: 330px; }
+  .gallery-section { padding: 50px 0 60px; }
+  .section-head { align-items: flex-start; flex-direction: column; }
+  .steps { grid-template-columns: 1fr; }
+  .editor { grid-template-columns: 1fr; padding: 20px; }
+  .preview-column { position: static; }
+  .modal-head { padding: 18px 20px; }
+  .footer { flex-direction: column; text-align: center; }
+  .how { padding-top: 55px; padding-bottom: 60px; }
+  .modal { padding: 10px; }
+  .modal-box { max-height: 97vh; }
 }
 
 @media (max-width: 420px) {
-  .template-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .template-art {
-    min-height: 200px;
-  }
-
-  .hero h1 {
-    font-size: 42px;
-  }
-
-  .art-stack {
-    transform: scale(.9);
-  }
-
-  .float {
-    font-size: 10px;
-    padding: 10px 12px;
-  }
-
-  .public-card {
-    padding: 24px 18px;
-  }
-
-  .logo {
-    font-size: 26px;
-  }
-
-  .navright .button {
-    padding: 10px 13px;
-    font-size: 12px;
-  }
+  .template-grid { grid-template-columns: 1fr; }
+  .template-art { min-height: 200px; }
+  .hero h1 { font-size: 42px; }
+  .art-stack { transform: scale(.9); }
+  .float { font-size: 10px; padding: 10px 12px; }
+  .public-card { padding: 24px 18px; }
+  .logo { font-size: 26px; }
+  .navright .button { padding: 10px 13px; font-size: 12px; }
 }
