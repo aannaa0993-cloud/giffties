@@ -1,5 +1,5 @@
 /* GIFTY — JavaScript
-   Mengatur galeri, filter, editor, preview, upload foto, link lagu YouTube & Animasi Unik.
+   Mengatur galeri, filter, editor, preview, upload maksimal 3 foto, link lagu YouTube & Animasi Unik.
 */
 (() => {
   "use strict";
@@ -106,7 +106,8 @@
 
   let selectedTemplate = templates[0];
   let selectedColor = selectedTemplate.color;
-  let photoData = "";
+  let photosArray = []; // Array untuk menampung maksimal 3 foto base64
+  let currentPhotoIndex = 0;
   let generatedGiftLink = "";
   let toastTimer;
 
@@ -146,7 +147,7 @@
       message: $("#message")?.value.trim() || "",
       song: $("#song")?.value.trim() || "",
       color: selectedColor,
-      photo: photoData,
+      photos: photosArray, // Menyimpan array foto (max 3)
       emoji: selectedTemplate.emoji
     };
   }
@@ -190,6 +191,30 @@
     });
   });
 
+  // Render slider foto untuk preview atau halaman publik
+  function setupPhotoSlider(photos, sliderEl, imgEl, dotsEl, prevBtn, nextBtn) {
+    if (!photos || photos.length === 0) {
+      sliderEl.hidden = true;
+      return;
+    }
+
+    sliderEl.hidden = false;
+    if (currentPhotoIndex >= photos.length) currentPhotoIndex = 0;
+
+    imgEl.src = photos[currentPhotoIndex];
+
+    // Buat titik-titik indikator (dots)
+    if (dotsEl) {
+      dotsEl.innerHTML = photos.map((_, i) => `
+        <span class="dot ${i === currentPhotoIndex ? "active" : ""}" data-index="${i}"></span>
+      `).join("");
+    }
+
+    // Sembunyikan tombol panah jika hanya ada 1 foto
+    if (prevBtn) prevBtn.style.display = photos.length > 1 ? "grid" : "none";
+    if (nextBtn) nextBtn.style.display = photos.length > 1 ? "grid" : "none";
+  }
+
   function updatePreview() {
     const data = getGiftData();
     const title = $("#prevTitle");
@@ -198,7 +223,6 @@
     const tag = $("#prevTag");
     const sign = $("#prevSign");
     const preview = $("#livePreview");
-    const image = $("#prevPhoto");
     const count = $("#charCount");
 
     if (title) title.textContent = data.headline || "A little gift for you";
@@ -211,14 +235,14 @@
     if (preview) preview.style.backgroundColor = selectedColor;
     if (count) count.textContent = String($("#message")?.value.length || 0);
 
-    if (image) {
-      image.hidden = !photoData;
-      if (photoData) {
-        image.src = photoData;
-      } else {
-        image.removeAttribute("src");
-      }
-    }
+    setupPhotoSlider(
+      photosArray,
+      $("#prevSlider"),
+      $("#prevPhoto"),
+      $("#prevDots"),
+      $("#prevBtnPrev"),
+      $("#prevBtnNext")
+    );
   }
 
   function colorToAccentValue(color) {
@@ -235,7 +259,8 @@
   function openEditor(templateId) {
     selectedTemplate = templates.find((item) => item.id === templateId) || templates[0];
     selectedColor = selectedTemplate.color;
-    photoData = "";
+    photosArray = [];
+    currentPhotoIndex = 0;
     generatedGiftLink = "";
 
     if (giftForm) giftForm.reset();
@@ -247,8 +272,7 @@
     $("#song").value = "";
     $("#accent").value = colorToAccentValue(selectedColor);
 
-    $("#prevPhoto").hidden = true;
-    $("#prevPhoto").removeAttribute("src");
+    $("#prevSlider").hidden = true;
     $("#linkResult").hidden = true;
     $("#copyLink").disabled = true;
     $("#linkStatus").textContent = "Preview akan berubah saat kamu mengisi form.";
@@ -302,33 +326,64 @@
     updatePreview();
   });
 
+  // Handler Upload Foto (Maksimal 3 Foto)
   $("#photo")?.addEventListener("change", (event) => {
-    const file = event.target.files?.[0];
-    if (!file) {
-      photoData = "";
-      updatePreview();
-      return;
-    }
-    if (!file.type.startsWith("image/")) {
-      showToast("Pilih file gambar yang valid.");
-      event.target.value = "";
-      return;
-    }
-    if (file.size > 600 * 1024) {
-      showToast("Ukuran foto maksimal 600 KB.");
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
+
+    if (files.length > 3) {
+      showToast("Maksimal hanya bisa memilih 3 foto!");
       event.target.value = "";
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      photoData = typeof reader.result === "string" ? reader.result : "";
+    photosArray = [];
+    currentPhotoIndex = 0;
+    let loadedCount = 0;
+    let totalSize = 0;
+
+    files.forEach((file) => {
+      totalSize += file.size;
+      if (!file.type.startsWith("image/")) {
+        showToast("Pastikan semua file berupa gambar.");
+        return;
+      }
+    });
+
+    if (totalSize > 600 * 1024) {
+      showToast("Total ukuran foto melebihi 600 KB. Pilih ukuran yang lebih kecil.");
+      event.target.value = "";
+      return;
+    }
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (typeof e.target?.result === "string") {
+          photosArray.push(e.target.result);
+        }
+        loadedCount++;
+        if (loadedCount === files.length) {
+          updatePreview();
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  // Tombol navigasi slider preview
+  $("#prevBtnPrev")?.addEventListener("click", () => {
+    if (photosArray.length > 0) {
+      currentPhotoIndex = (currentPhotoIndex - +1 + photosArray.length) % photosArray.length;
       updatePreview();
-    };
-    reader.onerror = () => {
-      showToast("Foto tidak bisa dibaca. Coba pilih foto lain.");
-    };
-    reader.readAsDataURL(file);
+    }
+  });
+
+  $("#prevBtnNext")?.addEventListener("click", () => {
+    if (photosArray.length > 0) {
+      currentPhotoIndex = (currentPhotoIndex + 1) % photosArray.length;
+      updatePreview();
+    }
   });
 
   $("#previewOpen")?.addEventListener("click", () => {
@@ -409,7 +464,6 @@
     if (!container) return;
     container.innerHTML = "";
 
-    // Tentukan set emoji animasi berbeda tiap kategori/template
     let items = ["🎈", "✨", "💖", "🎉"];
     if (templateId === "love" || templateId === "mixtape") {
       items = ["💖", "💌", "🌹", "💘", "✨", "💋"];
@@ -438,7 +492,6 @@
     }
   }
 
-  // Helper ekstrak ID video YouTube untuk embed otomatis
   function getYouTubeEmbedUrl(url) {
     if (!url) return null;
     try {
@@ -483,14 +536,43 @@
 
     $("#publicCard").style.backgroundColor = data.color || "#ffd6df";
 
-    // Foto hadiah
-    const image = $("#publicPhoto");
-    image.hidden = !data.photo;
-    if (data.photo) {
-      image.src = data.photo;
-    } else {
-      image.removeAttribute("src");
+    // Setup Foto Publik Carousel (Mendukung data baru `photos` atau backward-compatible `photo`)
+    let pubPhotos = [];
+    if (data.photos && Array.isArray(data.photos)) {
+      pubPhotos = data.photos;
+    } else if (data.photo) {
+      pubPhotos = [data.photo];
     }
+    let pubPhotoIndex = 0;
+
+    const renderPubSlider = () => {
+      setupPhotoSlider(
+        pubPhotos,
+        $("#publicSlider"),
+        $("#publicPhoto"),
+        $("#publicDots"),
+        $("#pubBtnPrev"),
+        $("#pubBtnNext")
+      );
+    };
+
+    $("#pubBtnPrev")?.onclick = () => {
+      if (pubPhotos.length > 0) {
+        pubPhotoIndex = (pubPhotoIndex - 1 + pubPhotos.length) % pubPhotos.length;
+        currentPhotoIndex = pubPhotoIndex;
+        renderPubSlider();
+      }
+    };
+
+    $("#pubBtnNext")?.onclick = () => {
+      if (pubPhotos.length > 0) {
+        pubPhotoIndex = (pubPhotoIndex + 1) % pubPhotos.length;
+        currentPhotoIndex = pubPhotoIndex;
+        renderPubSlider();
+      }
+    };
+
+    renderPubSlider();
 
     // Penanganan Lagu & YouTube Embed Bersamaan di Kartu
     const mediaPlayerBox = $("#mediaPlayerBox");
@@ -507,7 +589,6 @@
       const ytEmbedUrl = getYouTubeEmbedUrl(data.song);
 
       if (ytEmbedUrl) {
-        // Jika link YouTube, tampilkan video player langsung di kartu!
         ytContainer.innerHTML = `
           <div class="youtube-embed-wrap">
             <iframe src="${ytEmbedUrl}" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -515,16 +596,13 @@
         `;
       }
 
-      // Tombol link cadangan tetap muncul di bawahnya
       try {
         const songURL = new URL(data.song);
         if (["https:", "http:"].includes(songURL.protocol)) {
           songLinkBtn.href = songURL.href;
           songLinkBtn.hidden = false;
         }
-      } catch {
-        // Ignored
-      }
+      } catch {}
     }
 
     document.title = `${data.headline || "A little gift"} — Gifty`;
@@ -532,7 +610,6 @@
     const openEnvelopeHandler = () => {
       if (!envelope.classList.contains("open")) {
         envelope.classList.add("open");
-        // Jalankan animasi dinamis berdasarkan templateId yang dipilih
         triggerCustomSurpriseEffects(data.templateId);
         if (replayBar) replayBar.hidden = false;
       }
@@ -581,7 +658,6 @@
 
     setTimeout(() => {
       envelope?.classList.add("open");
-      // Ambil kembali data template aktif saat replay
       const encoded = window.location.hash.slice("#gift=".length);
       let currentTemplateId = "love";
       try {
