@@ -205,14 +205,14 @@
           </div>
 
           <div class="form-field">
-            <label for="song">Link lagu (opsional)</label>
+            <label for="song">Link lagu / YouTube (opsional)</label>
             <input
               id="song"
               type="url"
-              placeholder="https://open.spotify.com/..."
+              placeholder="https://www.youtube.com/watch?v=..."
             >
             <div class="help">
-              Masukkan link Spotify, YouTube, atau layanan musik.
+              Masukkan link YouTube agar lagu bisa langsung diputar di dalam kartu!
             </div>
           </div>
 
@@ -298,7 +298,7 @@
       ← ke gifty
     </button>
 
-    <!-- Kontainer Efek Balon & Confetti Floating -->
+    <!-- Kontainer Animasi Dinamis -->
     <div class="floating-container" id="floatingContainer" aria-hidden="true"></div>
 
     <div class="public-inner">
@@ -323,17 +323,22 @@
             <img id="publicPhoto" hidden alt="Foto hadiah">
 
             <p class="public-message" id="publicMessage"></p>
-            <p class="public-sign" id="publicSign"></p>
 
-            <a
-              id="publicSong"
-              class="song-button"
-              target="_blank"
-              rel="noopener noreferrer"
-              hidden
-            >
-              ♫ Dengarkan lagu pilihan ↗
-            </a>
+            <!-- Wadah Pemutar Musik YouTube / Link -->
+            <div class="media-player-box" id="mediaPlayerBox" hidden>
+              <div id="youtubeContainer"></div>
+              <a
+                id="publicSong"
+                class="song-button"
+                target="_blank"
+                rel="noopener noreferrer"
+                hidden
+              >
+                ♫ Buka link lagu pilihan ↗
+              </a>
+            </div>
+
+            <p class="public-sign" id="publicSign"></p>
           </article>
         </div>
 
@@ -349,7 +354,7 @@
   <!-- Notifikasi -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <!-- Jalankan JavaScript setelah HTML selesai dibaca -->
+  <!-- Jalankan JavaScript setelah selesai -->
   <script src="script.js" defer></script>
 </body>
 </html>
