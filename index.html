@@ -196,11 +196,10 @@
           </div>
 
           <div class="form-field">
-            <label for="photo">Foto (opsional)</label>
-            <input id="photo" type="file" accept="image/*">
+            <label for="photo">Foto (opsional, maks. 3 foto)</label>
+            <input id="photo" type="file" accept="image/*" multiple>
             <div class="help">
-              Pilih satu foto berukuran maksimal 600 KB agar link tidak
-              terlalu panjang.
+              Bisa pilih 1 hingga 3 foto (total ukuran maks. 600 KB).
             </div>
           </div>
 
@@ -256,7 +255,13 @@
             <div class="prev-emoji" id="prevEmoji">🎁</div>
             <h3 id="prevTitle">A little gift for you</h3>
 
-            <img id="prevPhoto" hidden alt="Foto pilihan">
+            <!-- Slider Foto Preview -->
+            <div class="photo-slider" id="prevSlider" hidden>
+              <button class="slider-btn prev" id="prevBtnPrev" type="button">‹</button>
+              <img id="prevPhoto" alt="Foto pilihan">
+              <button class="slider-btn next" id="prevBtnNext" type="button">›</button>
+              <div class="slider-dots" id="prevDots"></div>
+            </div>
 
             <div class="prev-message" id="prevMessage">
               Your lovely message will appear here.
@@ -320,7 +325,13 @@
             <p class="public-recipient" id="publicRecipient"></p>
             <h2 id="publicTitle">A little gift for you</h2>
 
-            <img id="publicPhoto" hidden alt="Foto hadiah">
+            <!-- Slider Foto Publik -->
+            <div class="photo-slider" id="publicSlider" hidden>
+              <button class="slider-btn prev" id="pubBtnPrev" type="button">‹</button>
+              <img id="publicPhoto" alt="Foto hadiah">
+              <button class="slider-btn next" id="pubBtnNext" type="button">›</button>
+              <div class="slider-dots" id="publicDots"></div>
+            </div>
 
             <p class="public-message" id="publicMessage"></p>
 
